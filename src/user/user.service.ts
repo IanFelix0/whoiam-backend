@@ -28,7 +28,7 @@ export class UserService {
     return await this.prisma.user.findUnique({ where: { id } })
       .then((user) => {
         if (user === null) {
-          throw new Error('Usuário não encontrado.'); // ou retorne null diretamente se preferir
+          throw new Error('Usuário não encontrado.');
         }
         return user;
       });
@@ -42,11 +42,29 @@ export class UserService {
     return await this.prisma.user.findMany();
   } 
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) :Promise<User> {
+
+    const data: Prisma.UserUpdateInput = {
+      ...updateUserDto
+    }
+
+    const updateUser = await this.prisma.user.update({
+      where: {
+        id: id
+      }, data
+    })
+    return {
+      ...updateUser,
+      password: undefined,
+    };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    const deleteUser = await this.prisma.user.delete({
+      where: {
+        id: id
+      },
+    })
+    return deleteUser
   }
 }

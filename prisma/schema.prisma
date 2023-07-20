@@ -13,17 +13,56 @@ datasource db {
 model User {
   id Int @id @default(autoincrement())
 
-  email    String @unique
+  // role Role @default(USER)
+
+  email String @unique
 
   password String
 
   username String @unique
 
-  firstname String
+  firstname String?
 
-  lastname String
+  lastname String?
 
   created_at DateTime @default(now())
 
+  favorites Video[]
+
   @@map("users")
 }
+
+model Video {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?
+  url         String
+  isPublic    Boolean?   @default(false)
+  playlist    Playlist?  @relation(fields: [playlistId], references: [id])
+  playlistId  Int?
+  user    User?  @relation(fields: [userId], references: [id])
+  userId  Int?
+  categories  Category[]
+
+  @@map("videos")
+}
+
+model Category {
+  id      Int    @id @default(autoincrement())
+  title   String @unique
+  color   String
+  video   Video? @relation(fields: [videoId], references: [id])
+  videoId Int?
+}
+
+model Playlist {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  videos      Video[]
+}
+
+// enum Role {
+//   USER
+//   ADMIM
+// }
